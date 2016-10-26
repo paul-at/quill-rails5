@@ -1,0 +1,1 @@
+require 'quill/rails5/railtie' if defined?(Rails)
