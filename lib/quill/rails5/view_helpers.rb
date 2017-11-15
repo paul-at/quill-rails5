@@ -1,23 +1,11 @@
 require "quill/rails5/version"
+require 'json'
 
 module Quill
   module Rails5
     module ViewHelpers
       def quill(options = {}, html_options = {}, &block)
         default_options = {
-          theme: 'snow',
-        }
-        actual_options = default_options.merge(options)
-
-        default_html_options = {
-          id: 'editor',
-        }
-        actual_html_options = default_html_options.merge(html_options)
-
-        stylesheet_link_tag("//cdn.quilljs.com/#{VERSION}/quill.#{actual_options[:theme]}.css") +
-        content_tag(:div, capture(&block), actual_html_options, escape: false) +
-        javascript_include_tag("//cdn.quilljs.com/#{VERSION}/quill.min.js") +
-        javascript_tag("  var quill = new Quill('##{actual_html_options[:id]}', {
           modules: {
             'toolbar': [
               [{ 'font': [] }, { 'size': [] }],
@@ -31,8 +19,20 @@ module Quill
               [ 'clean' ]
             ],
           },
-          theme: '#{actual_options[:theme]}'
-        });")
+          theme: 'snow'
+        }
+
+        actual_options = default_options.merge(options)
+
+        default_html_options = {
+          id: 'editor',
+        }
+        actual_html_options = default_html_options.merge(html_options)
+
+        stylesheet_link_tag("//cdn.quilljs.com/#{VERSION}/quill.#{actual_options[:theme]}.css") +
+        content_tag(:div, capture(&block), actual_html_options, escape: false) +
+        javascript_include_tag("//cdn.quilljs.com/#{VERSION}/quill.min.js") +
+        javascript_tag("  var quill = new Quill('##{actual_html_options[:id]}', #{actual_options.to_json} );")
       end
 
       def quill_field(form, name, editor_id = 'editor')
